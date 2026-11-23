@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluentPulse — Interactive English Learning Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-md shrink-0">
+                    <!-- Custom Brand Logo SVG -->
+                    <svg viewBox="0 0 100 100" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg" aria-label="Brand Logo">
+                        <rect width="100" height="100" fill="#5ce600"/>
+                        <path d="M 19.5 29.5 L 31.5 25.5 L 39.5 52 L 50 26.5 L 60.5 52 L 68.5 25.5 L 80.5 29.5 L 63.5 74 L 50 47.5 L 36.5 74 Z" fill="#121212"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Fluent<span class="text-blue-600 dark:text-blue-400">Pulse</span></span>
+                    <span class="hidden sm:inline-block ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">AI Studio</span>
+                </div>
+            </div>
+
+            <!-- Stats & Theme Toggle -->
+            <div class="flex items-center space-x-3 sm:space-x-5">
+                <div class="flex items-center space-x-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-full text-sm font-semibold border border-amber-200/60 dark:border-amber-800/50" title="Daily Streak">
+                    <i class="fa-solid fa-fire"></i>
+                    <span id="streak-count">5 Days</span>
+                </div>
+                <div class="hidden sm:flex items-center space-x-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 px-3 py-1.5 rounded-full text-sm font-semibold border border-emerald-200/60 dark:border-emerald-800/50" title="Mastery XP">
+                    <i class="fa-solid fa-star"></i>
+                    <span id="xp-count">420 XP</span>
+                </div>
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" aria-label="Toggle Dark Mode">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- Hero Welcome & Navigation Tabs -->
+        <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Master English Naturally</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">Build vocabulary, refine grammar, and practice real conversations with AI.</p>
+            </div>
+
+            <!-- Module Navigation Pills -->
+            <nav class="flex overflow-x-auto pb-2 md:pb-0 space-x-2 no-scrollbar" aria-label="Learning Modules">
+                <button onclick="switchTab('vocab')" id="tab-vocab" class="nav-tab active flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition bg-blue-600 text-white shadow-sm">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Vocabulary</span>
+                </button>
+                <button onclick="switchTab('grammar')" id="tab-grammar" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>AI Grammar Coach</span>
+                </button>
+                <button onclick="switchTab('reading')" id="tab-reading" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Reading & Listening</span>
+                </button>
+                <button onclick="switchTab('chat')" id="tab-chat" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Conversation Tutor</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span>Quick Quiz</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- ==================== MODULE 1: VOCABULARY STUDIO ==================== -->
+        <section id="section-vocab" class="module-section space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Interactive Flashcard Area -->
+                <div class="lg:col-span-2 flex flex-col justify-between bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <span id="card-level" class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">Intermediate (B2)</span>
+                            <span id="card-counter" class="text-sm text-slate-500 dark:text-slate-400 font-medium">Card 1 of 5</span>
+                            <span id="card-learned-badge" class="hidden px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"><i class="fa-solid fa-check mr-1"></i>Learned</span>
+                        </div>
+                        <button id="btn-pronounce" onclick="speakWord()" class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition text-sm font-medium" title="Listen to pronunciation">
+                            <i id="pronounce-icon" class="fa-solid fa-volume-high"></i>
+                            <span id="pronounce-text">Pronounce</span>
+                        </button>
+                    </div>
+
+                    <!-- Card Content -->
+                    <div id="flashcard-box" onclick="flipCard()" class="cursor-pointer my-4 p-6 sm:p-10 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/60 dark:to-slate-800/30 border border-slate-200/80 dark:border-slate-700/80 min-h-[260px] flex flex-col items-center justify-center text-center transition-all hover:shadow-md select-none">
+                        <!-- Front View -->
+                        <div id="card-front" class="space-y-3">
+                            <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Tap card to reveal meaning</p>
+                            <h2 id="word-text" class="font-serif text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">Serendipity</h2>
+                            <p id="word-phonetic" class="text-slate-500 dark:text-slate-400 font-mono text-base">/ˌser.ənˈdɪp.ə.ti/ • noun</p>
+                        </div>
+
+                        <!-- Back View (Hidden initially) -->
+                        <div id="card-back" class="hidden space-y-4 max-w-lg">
+                            <div class="inline-block px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">Definition</div>
+                            <p id="word-definition" class="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100">The occurrence and development of events by chance in a happy or beneficial way.</p>
+                            <div class="p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-700/60 text-left">
+                                <p class="text-xs font-semibold text-slate-400 uppercase mb-1">Example in context</p>
+                                <p id="word-example" class="text-sm sm:text-base italic text-slate-600 dark:text-slate-300">"Finding that rare book in a tiny village shop was pure serendipity."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Navigation Controls -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button onclick="prevCard()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium text-sm transition flex items-center space-x-2" title="Previous (Left Arrow)">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button onclick="markMastered()" id="btn-mastered" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition shadow-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Mark as Learned (+15 XP)</span>
+                        </button>
+                        <button onclick="nextCard()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium text-sm transition flex items-center space-x-2" title="Next (Right Arrow)">
+                            <span>Next</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Word Generator Sidebar -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-400" id="learned-total-stat">0 words mastered</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Custom AI Deck</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Generate tailored vocabulary words for any topic you want to master.</p>
+
+                        <div class="mt-5 space-y-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Choose Topic or Type Custom</label>
+                            <input type="text" id="vocab-topic-input" placeholder="e.g., Business Meetings, Travel, Tech..." class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            
+                            <div class="flex flex-wrap gap-2 pt-1">
+                                <button onclick="setTopic('Business & Leadership')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-600 dark:text-slate-300 transition">Business</button>
+                                <button onclick="setTopic('Idioms & Slang')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-600 dark:text-slate-300 transition">Idioms</button>
+                                <button onclick="setTopic('Academic Writing')" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-600 dark:text-slate-300 transition">Academic</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="generateCustomDeck()" id="btn-generate-deck" class="mt-6 w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>Generate 5 New Words</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MODULE 2: AI GRAMMAR & WRITING COACH ==================== -->
+        <section id="section-grammar" class="module-section hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Input Box -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Your English Text</h2>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="clearGrammarInput()" class="text-xs font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">Clear</button>
+                            <button onclick="fillSampleText()" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Insert sample</button>
+                        </div>
+                    </div>
+                    <textarea id="grammar-input" rows="7" placeholder="Write a sentence or paragraph in English here. Our AI coach will fix errors, explain grammar rules, and suggest natural-sounding alternatives..." class="w-full flex-grow p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <select id="tone-select" class="px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-200 focus:outline-none">
+                            <option value="Natural & Everyday">Tone: Natural & Everyday</option>
+                            <option value="Professional & Formal">Tone: Professional & Formal</option>
+                            <option value="Academic & Precise">Tone: Academic & Precise</option>
+                            <option value="Casual & Friendly">Tone: Casual & Friendly</option>
+                        </select>
+                        <button onclick="analyzeGrammar()" id="btn-analyze-grammar" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-sm flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-spell-check"></i>
+                            <span>Check & Enhance</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback Output -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Coach Feedback</h2>
+                        <div id="grammar-placeholder" class="h-64 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-slate-400">
+                            <i class="fa-regular fa-pen-to-square text-3xl mb-3"></i>
+                            <p class="text-sm">Submit your text on the left to receive instant corrections, natural rewrites, and clear grammar explanations.</p>
+                        </div>
+
+                        <div id="grammar-result" class="hidden space-y-4">
+                            <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Corrected & Polished</span>
+                                    <button onclick="copyText('grammar-corrected')" class="text-xs text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1"><i class="fa-regular fa-copy"></i> Copy</button>
+                                </div>
+                                <p id="grammar-corrected" class="mt-1 text-base font-medium text-slate-900 dark:text-white"></p>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">Native Speaker Alternative</span>
+                                    <button onclick="copyText('grammar-native')" class="text-xs text-blue-700 dark:text-blue-400 hover:underline flex items-center gap-1"><i class="fa-regular fa-copy"></i> Copy</button>
+                                </div>
+                                <p id="grammar-native" class="mt-1 text-base italic text-slate-800 dark:text-slate-200"></p>
+                            </div>
+
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Key Improvements</span>
+                                <ul id="grammar-tips" class="mt-2 space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MODULE 3: READING & LISTENING STUDIO ==================== -->
+        <section id="section-reading" class="module-section hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Story Reader & Audio Player -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-6">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center space-x-2">
+                                <span id="reading-level-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Intermediate (B1-B2)</span>
+                                <span class="text-xs text-slate-400 font-medium">Short Story</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button id="btn-read-aloud" onclick="playReadingPassage()" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+                                    <i id="read-aloud-icon" class="fa-solid fa-headphones"></i>
+                                    <span id="read-aloud-text">Listen to Story</span>
+                                </button>
+                                <button id="btn-new-story" onclick="generateNewStory()" class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-medium transition">
+                                    <i class="fa-solid fa-rotate"></i>
+                                    <span>New Story</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <h2 id="reading-title" class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">The Midnight Train to Kyoto</h2>
+                        <div id="reading-passage" class="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed space-y-4">
+                            <p>When Clara arrived at the station just three minutes before departure, the platform was nearly deserted. She had packed her suitcase in a rush, determined to escape the relentless noise of the city for a quiet weekend in the mountains.</p>
+                            <p>As the train glided smoothly out of the terminal, she noticed an elderly man sitting across the aisle, carefully sketching the passing streetlights in a leather-bound notebook. Struck by curiosity, Clara struck up a conversation—never imagining that his advice would completely change her career path.</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                        <span><i class="fa-solid fa-circle-info mr-1 text-blue-500"></i>Tip: Listen to the audio first without reading to train your ear!</span>
+                    </div>
+                </div>
+
+                <!-- Comprehension Check -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Comprehension Check</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Answer based on the passage to earn +25 XP.</p>
+                        
+                        <p id="reading-question" class="font-semibold text-sm sm:text-base text-slate-800 dark:text-slate-100 mb-4">Why did Clara decide to take the train trip?</p>
+                        <div id="reading-options" class="space-y-2.5"></div>
+                        <div id="reading-feedback" class="hidden mt-4 p-3.5 rounded-xl text-xs sm:text-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MODULE 4: AI CONVERSATION TUTOR ==================== -->
+        <section id="section-chat" class="module-section hidden">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-[560px]">
+                <!-- Chat Header & Scenario Selector -->
+                <div class="p-4 sm:px-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">AI</div>
+                        <div>
+                            <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">Emma — English Tutor</h3>
+                            <p class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Online • Replies & gently corrects
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs font-medium text-slate-500 hidden sm:inline">Scenario:</label>
+                        <select id="chat-scenario" onchange="resetChatScenario()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-medium">
+                            <option value="coffee">Ordering at a Café</option>
+                            <option value="interview">Job Interview Practice</option>
+                            <option value="travel">Airport & Hotel Check-in</option>
+                            <option value="casual">Casual Small Talk</option>
+                        </select>
+                        <button onclick="resetChatScenario()" title="Restart Conversation" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white transition">
+                            <i class="fa-solid fa-rotate-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div id="chat-messages" class="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4">
+                    <div class="flex items-start space-x-3 max-w-2xl">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-1">AI</div>
+                        <div class="p-4 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm sm:text-base leading-relaxed">
+                            Hi there! Welcome to The Daily Grind Café. What can I get started for you today? ☕
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <form onsubmit="sendChatMessage(event)" class="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center space-x-3">
+                    <input type="text" id="chat-input" placeholder="Type your reply in English..." autocomplete="off" class="flex-grow px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" id="btn-send-chat" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex items-center space-x-2 shrink-0">
+                        <span>Send</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ==================== MODULE 5: QUICK INTERACTIVE QUIZ ==================== -->
+        <section id="section-quiz" class="module-section hidden">
+            <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Grammar & Idiom Challenge</span>
+                        <button id="btn-ai-quiz" onclick="generateAIQuiz()" class="text-xs px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/60 font-semibold transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-sparkles"></i> New AI Quiz
+                        </button>
+                    </div>
+                    <span id="quiz-progress" class="text-sm font-medium text-slate-500">Question 1 / 5</span>
+                </div>
+
+                <div id="quiz-container">
+                    <h2 id="quiz-question" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6">Loading question...</h2>
+                    <div id="quiz-options" class="space-y-3"></div>
+                    <div id="quiz-feedback" class="hidden mt-6 p-4 rounded-2xl text-sm"></div>
+                    <div class="mt-6 flex justify-end">
+                        <button id="btn-next-quiz" onclick="nextQuizQuestion()" class="hidden px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition">Next Question</button>
+                    </div>
+                </div>
+
+                <div id="quiz-summary" class="hidden text-center py-6 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-500 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Quiz Complete!</h2>
+                    <p id="quiz-score-text" class="text-slate-600 dark:text-slate-300 text-base">You scored 4 out of 5!</p>
+                    <button onclick="restartQuiz()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition">Practice Again</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Notification Toast (Replaces alert) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-lg flex items-center space-x-3 text-sm font-medium">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600"></i>
+            <span id="toast-message">Action completed!</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const apiKey = ""; // Provided at runtime
+
+        // ==================== STATE MANAGEMENT & PERSISTENCE ====================
+        let xp = parseInt(localStorage.getItem('fp_xp') || '420', 10);
+        let streak = parseInt(localStorage.getItem('fp_streak') || '5', 10);
+        let learnedWords = new Set(JSON.parse(localStorage.getItem('fp_learned') || '[]'));
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        let vocabDeck = [
+            {
+                word: "Serendipity",
+                phonetic: "/ˌser.ənˈdɪp.ə.ti/ • noun",
+                level: "Intermediate (B2)",
+                definition: "The occurrence and development of events by chance in a happy or beneficial way.",
+                example: "Finding that rare book in a tiny village shop was pure serendipity."
+            },
+            {
+                word: "Eloquent",
+                phonetic: "/ˈel.ə.kwənt/ • adjective",
+                level: "Upper-Intermediate (B2)",
+                definition: "Fluent, persuasive, and expressive in speaking or writing.",
+                example: "She gave an eloquent speech that moved the entire audience."
+            },
+            {
+                word: "Pragmatic",
+                phonetic: "/præɡˈmæt.ɪk/ • adjective",
+                level: "Advanced (C1)",
+                definition: "Dealing with things sensibly and realistically in a way that is based on practical considerations.",
+                example: "We need a pragmatic approach to solve this budget issue."
+            },
+            {
+                word: "Bite the bullet",
+                phonetic: "/baɪt ðə ˈbʊl.ɪt/ • idiom",
+                level: "Idiomatic",
+                definition: "To decide to do something difficult or unpleasant that one has been putting off.",
+                example: "I hate going to the dentist, but I'll just have to bite the bullet and go."
+            },
+            {
+                word: "Resilient",
+                phonetic: "/rɪˈzɪl.jənt/ • adjective",
+                level: "Intermediate (B2)",
+                definition: "Able to withstand or recover quickly from difficult conditions.",
+                example: "Children are often remarkably resilient in the face of change."
+            }
+        ];
+
+        let quizQuestions = [
+            {
+                q: "Choose the correct sentence:",
+                options: [
+                    "She has been living in London since five years.",
+                    "She has been living in London for five years.",
+                    "She is living in London since five years.",
+                    "She lived in London since five years."
+                ],
+                answer: 1,
+                explanation: "Use 'for' with a duration of time (five years), and 'since' with a specific point in time (e.g., since 2021)."
+            },
+            {
+                q: "What does the idiom 'hit the nail on the head' mean?",
+                options: [
+                    "To make a painful mistake",
+                    "To finish a construction project",
+                    "To describe exactly what is causing a situation or problem",
+                    "To lose your temper suddenly"
+                ],
+                answer: 2,
+                explanation: "'Hit the nail on the head' means to be completely accurate or right about something."
+            },
+            {
+                q: "If I _____ you, I would accept that job offer immediately.",
+                options: ["was", "am", "were", "be"],
+                answer: 2,
+                explanation: "In second conditional hypothetical sentences ('If I were you'), 'were' is used for all subjects."
+            },
+            {
+                q: "Which word is a synonym for 'meticulous'?",
+                options: ["Careless", "Thorough", "Hasty", "Vague"],
+                answer: 1,
+                explanation: "'Meticulous' means showing great attention to detail; very careful and thorough."
+            },
+            {
+                q: "Neither the manager nor the employees _____ aware of the schedule change.",
+                options: ["was", "is", "were", "has been"],
+                answer: 2,
+                explanation: "With 'neither...nor', the verb agrees with the subject closer to it ('employees', which is plural)."
+            }
+        ];
+
+        let currentStory = {
+            title: "The Midnight Train to Kyoto",
+            level: "Intermediate (B1-B2)",
+            paragraphs: [
+                "When Clara arrived at the station just three minutes before departure, the platform was nearly deserted. She had packed her suitcase in a rush, determined to escape the relentless noise of the city for a quiet weekend in the mountains.",
+                "As the train glided smoothly out of the terminal, she noticed an elderly man sitting across the aisle, carefully sketching the passing streetlights in a leather-bound notebook. Struck by curiosity, Clara struck up a conversation—never imagining that his advice would completely change her career path."
+            ],
+            question: "Why did Clara decide to take the train trip?",
+            options: [
+                "To meet an elderly artist she knew",
+                "To get away from the loud city for a peaceful weekend",
+                "To attend an urgent business interview",
+                "Because she missed her morning flight"
+            ],
+            answer: 1,
+            explanation: "The passage mentions she was 'determined to escape the relentless noise of the city for a quiet weekend in the mountains.'"
+        };
+
+        let currentQuizIdx = 0;
+        let quizScore = 0;
+        let chatHistory = [];
+        let currentAudio = null;
+        const audioCache = new Map();
+
+        // ==================== INITIALIZATION & THEME ====================
+        window.onload = () => {
+            document.getElementById('xp-count').textContent = `${xp} XP`;
+            document.getElementById('streak-count').textContent = `${streak} Days`;
+            updateLearnedStats();
+            renderCard();
+            renderReadingModule();
+            loadQuizQuestion();
+            initChatContext();
+
+            // Keyboard shortcuts for Vocabulary Flashcards
+            document.addEventListener('keydown', (e) => {
+                const vocabVisible = !document.getElementById('section-vocab').classList.contains('hidden');
+                const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+                if (!vocabVisible || isTyping) return;
+
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    flipCard();
+                } else if (e.code === 'ArrowRight') {
+                    nextCard();
+                } else if (e.code === 'ArrowLeft') {
+                    prevCard();
+                }
+            });
+        };
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        if (localStorage.getItem('fp_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            themeIcon.className = 'fa-solid fa-sun text-amber-400';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('fp_theme', isDark ? 'dark' : 'light');
+            themeIcon.className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+        });
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-message').textContent = msg;
+            icon.className = isError 
+                ? 'fa-solid fa-circle-exclamation text-rose-400' 
+                : 'fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600';
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3200);
+        }
+
+        function addXP(points) {
+            xp += points;
+            localStorage.setItem('fp_xp', xp.toString());
+            document.getElementById('xp-count').textContent = `${xp} XP`;
+        }
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!");
+            } catch (e) {
+                showToast("Could not copy text.", true);
+            }
+            document.body.removeChild(temp);
+        }
+
+        // ==================== TAB NAVIGATION ====================
+        function switchTab(tabName) {
+            stopActiveAudio();
+            document.querySelectorAll('.module-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        }
+
+        // ==================== GEMINI API HELPER (WITH BACKOFF) ====================
+        async function callGeminiAPI(payload) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const delays = [1000, 2000, 4000];
+            
+            for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                } catch (err) {
+                    if (i === delays.length) throw err;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        // ==================== MODULE 1: VOCABULARY LOGIC ====================
+        function updateLearnedStats() {
+            document.getElementById('learned-total-stat').textContent = `${learnedWords.size} words mastered`;
+        }
+
+        function renderCard() {
+            const card = vocabDeck[currentCardIndex];
+            isFlipped = false;
+            document.getElementById('card-front').classList.remove('hidden');
+            document.getElementById('card-back').classList.add('hidden');
+
+            document.getElementById('card-level').textContent = card.level;
+            document.getElementById('card-counter').textContent = `Card ${currentCardIndex + 1} of ${vocabDeck.length}`;
+            document.getElementById('word-text').textContent = card.word;
+            document.getElementById('word-phonetic').textContent = card.phonetic;
+            document.getElementById('word-definition').textContent = card.definition;
+            document.getElementById('word-example').textContent = `"${card.example}"`;
+
+            const isLearned = learnedWords.has(card.word.toLowerCase());
+            document.getElementById('card-learned-badge').classList.toggle('hidden', !isLearned);
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            document.getElementById('card-front').classList.toggle('hidden', isFlipped);
+            document.getElementById('card-back').classList.toggle('hidden', !isFlipped);
+        }
+
+        function nextCard() {
+            stopActiveAudio();
+            currentCardIndex = (currentCardIndex + 1) % vocabDeck.length;
+            renderCard();
+        }
+
+        function prevCard() {
+            stopActiveAudio();
+            currentCardIndex = (currentCardIndex - 1 + vocabDeck.length) % vocabDeck.length;
+            renderCard();
+        }
+
+        function markMastered() {
+            const currentWord = vocabDeck[currentCardIndex].word;
+            const key = currentWord.toLowerCase();
+            if (!learnedWords.has(key)) {
+                learnedWords.add(key);
+                localStorage.setItem('fp_learned', JSON.stringify([...learnedWords]));
+                updateLearnedStats();
+                addXP(15);
+                showToast(`Mastered "${currentWord}"! +15 XP`);
+            } else {
+                showToast(`"${currentWord}" is already in your mastered list!`);
+            }
+            nextCard();
+        }
+
+        function stopActiveAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            // Reset Vocab Pronounce Button
+            const pBtn = document.getElementById('btn-pronounce');
+            if (pBtn) {
+                pBtn.disabled = false;
+                document.getElementById('pronounce-icon').className = "fa-solid fa-volume-high";
+                document.getElementById('pronounce-text').textContent = "Pronounce";
+            }
+            // Reset Reading Aloud Button
+            const rBtn = document.getElementById('btn-read-aloud');
+            if (rBtn) {
+                rBtn.disabled = false;
+                document.getElementById('read-aloud-icon').className = "fa-solid fa-headphones";
+                document.getElementById('read-aloud-text').textContent = "Listen to Story";
+            }
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.byteLength;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            const pcmBytes = new Uint8Array(pcm16.buffer);
+            new Uint8Array(buffer, 44).set(pcmBytes);
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        async function fetchGeminiTTS(textToSpeak) {
+            if (audioCache.has(textToSpeak)) {
+                return audioCache.get(textToSpeak);
+            }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Read clearly and naturally: ${textToSpeak}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Aoede" }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            const delays = [1000, 2000, 4000];
+            for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                        const rateMatch = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        audioCache.set(textToSpeak, audioUrl);
+                        return audioUrl;
+                    }
+                    throw new Error("Missing audio payload");
+                } catch (err) {
+                    if (i === delays.length) throw err;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        async function playTTSWithUI(textToSpeak, btnId, iconId, labelId, idleText, idleIconClass) {
+            const btn = document.getElementById(btnId);
+            const icon = document.getElementById(iconId);
+            const label = document.getElementById(labelId);
+
+            stopActiveAudio();
+
+            btn.disabled = true;
+            icon.className = "fa-solid fa-spinner fa-spin";
+            label.textContent = "Loading...";
+
+            try {
+                const audioUrl = await fetchGeminiTTS(textToSpeak);
+                currentAudio = new Audio(audioUrl);
+                
+                icon.className = "fa-solid fa-volume-high animate-pulse";
+                label.textContent = "Playing...";
+
+                const cleanup = () => {
+                    btn.disabled = false;
+                    icon.className = idleIconClass;
+                    label.textContent = idleText;
+                    currentAudio = null;
+                };
+
+                currentAudio.onended = cleanup;
+                currentAudio.onerror = cleanup;
+
+                await currentAudio.play();
+            } catch (err) {
+                btn.disabled = false;
+                icon.className = idleIconClass;
+                label.textContent = idleText;
+
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.92;
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    showToast("Unable to play audio on this device.", true);
+                }
+            }
+        }
+
+        function speakWord() {
+            const currentCard = vocabDeck[currentCardIndex];
+            const textToSpeak = isFlipped ? `${currentCard.word}. ${currentCard.example}` : currentCard.word;
+            playTTSWithUI(textToSpeak, 'btn-pronounce', 'pronounce-icon', 'pronounce-text', 'Pronounce', 'fa-solid fa-volume-high');
+        }
+
+        function setTopic(topic) {
+            document.getElementById('vocab-topic-input').value = topic;
+        }
+
+        async function generateCustomDeck() {
+            const topic = document.getElementById('vocab-topic-input').value.trim() || "Everyday Conversation";
+            const btn = document.getElementById('btn-generate-deck');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Generating...</span>`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: `Generate 5 useful English vocabulary words or idioms related to the topic: "${topic}". Provide phonetic transcription with part of speech, CEFR level, clear definition, and a natural example sentence.`
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                word: { type: "STRING" },
+                                phonetic: { type: "STRING" },
+                                level: { type: "STRING" },
+                                definition: { type: "STRING" },
+                                example: { type: "STRING" }
+                            },
+                            required: ["word", "phonetic", "level", "definition", "example"]
+                        }
+                    }
+                }
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(payload);
+                const newWords = JSON.parse(jsonText);
+                if (Array.isArray(newWords) && newWords.length > 0) {
+                    vocabDeck = newWords;
+                    currentCardIndex = 0;
+                    renderCard();
+                    showToast(`Loaded 5 new words for "${topic}"!`);
+                }
+            } catch (error) {
+                showToast("Could not generate deck right now. Please try again.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
+
+        // ==================== MODULE 2: AI GRAMMAR COACH ====================
+        function clearGrammarInput() {
+            document.getElementById('grammar-input').value = '';
+            document.getElementById('grammar-result').classList.add('hidden');
+            document.getElementById('grammar-placeholder').classList.remove('hidden');
+        }
+
+        function fillSampleText() {
+            document.getElementById('grammar-input').value = "Yesterday I have went to the market for buying some fresh fruits, but the shop was already close when I reach there.";
+        }
+
+        async function analyzeGrammar() {
+            const text = document.getElementById('grammar-input').value.trim();
+            const tone = document.getElementById('tone-select').value;
+            if (!text) {
+                showToast("Please enter some English text first.", true);
+                return;
+            }
+
+            const btn = document.getElementById('btn-analyze-grammar');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Analyzing...</span>`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: `Analyze this English text written by a learner: "${text}". Target tone: ${tone}. Return a JSON object with: "corrected" (grammatically fixed version), "nativeAlternative" (how a native speaker would naturally say it in the requested tone), and "tips" (an array of 2-3 brief, encouraging explanations of the grammar/vocabulary improvements).`
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            corrected: { type: "STRING" },
+                            nativeAlternative: { type: "STRING" },
+                            tips: { type: "ARRAY", items: { type: "STRING" } }
+                        },
+                        required: ["corrected", "nativeAlternative", "tips"]
+                    }
+                }
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(payload);
+                const result = JSON.parse(jsonText);
+
+                document.getElementById('grammar-placeholder').classList.add('hidden');
+                document.getElementById('grammar-result').classList.remove('hidden');
+
+                document.getElementById('grammar-corrected').textContent = result.corrected;
+                document.getElementById('grammar-native').textContent = result.nativeAlternative;
+
+                const tipsList = document.getElementById('grammar-tips');
+                tipsList.innerHTML = '';
+                result.tips.forEach(tip => {
+                    const li = document.createElement('li');
+                    li.textContent = tip;
+                    tipsList.appendChild(li);
+                });
+
+                addXP(20);
+                showToast("Analysis complete! +20 XP");
+            } catch (err) {
+                showToast("Unable to analyze text right now. Try again.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
+
+        // ==================== MODULE 3: READING & LISTENING STUDIO ====================
+        function renderReadingModule() {
+            document.getElementById('reading-title').textContent = currentStory.title;
+            document.getElementById('reading-level-badge').textContent = currentStory.level;
+            
+            const passageDiv = document.getElementById('reading-passage');
+            passageDiv.innerHTML = currentStory.paragraphs.map(p => `<p>${escapeHTML(p)}</p>`).join('');
+
+            document.getElementById('reading-question').textContent = currentStory.question;
+            const feedback = document.getElementById('reading-feedback');
+            feedback.classList.add('hidden');
+
+            const optionsDiv = document.getElementById('reading-options');
+            optionsDiv.innerHTML = '';
+            currentStory.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "reading-opt w-full text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 bg-slate-50/60 dark:bg-slate-800/60 transition text-xs sm:text-sm font-medium flex items-center justify-between";
+                btn.innerHTML = `<span>${escapeHTML(opt)}</span>`;
+                btn.onclick = () => checkReadingAnswer(idx, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkReadingAnswer(selectedIdx, btnEl) {
+            const buttons = document.querySelectorAll('.reading-opt');
+            buttons.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('reading-feedback');
+            feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'dark:bg-emerald-950/50', 'dark:text-emerald-200', 'bg-rose-50', 'text-rose-800', 'dark:bg-rose-950/50', 'dark:text-rose-200');
+
+            if (selectedIdx === currentStory.answer) {
+                addXP(25);
+                btnEl.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                btnEl.innerHTML += `<i class="fa-solid fa-circle-check text-emerald-500 ml-2"></i>`;
+                feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'dark:bg-emerald-950/50', 'dark:text-emerald-200');
+                feedback.innerHTML = `<strong>Great job! (+25 XP)</strong> ${escapeHTML(currentStory.explanation)}`;
+            } else {
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
+                btnEl.innerHTML += `<i class="fa-solid fa-circle-xmark text-rose-500 ml-2"></i>`;
+                buttons[currentStory.answer].classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                feedback.classList.add('bg-rose-50', 'text-rose-800', 'dark:bg-rose-950/50', 'dark:text-rose-200');
+                feedback.innerHTML = `<strong>Not quite.</strong> ${escapeHTML(currentStory.explanation)}`;
+            }
+        }
+
+        function playReadingPassage() {
+            const fullText = `${currentStory.title}. ${currentStory.paragraphs.join(' ')}`;
+            playTTSWithUI(fullText, 'btn-read-aloud', 'read-aloud-icon', 'read-aloud-text', 'Listen to Story', 'fa-solid fa-headphones');
+        }
+
+        async function generateNewStory() {
+            stopActiveAudio();
+            const btn = document.getElementById('btn-new-story');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Writing...</span>`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: "Write a short, engaging 2-paragraph English reading comprehension story (approx. 100-130 words) at an Intermediate B1-B2 level, plus 1 multiple-choice comprehension question with 4 options, the 0-based index of the correct option, and a brief explanation."
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            title: { type: "STRING" },
+                            level: { type: "STRING" },
+                            paragraphs: { type: "ARRAY", items: { type: "STRING" } },
+                            question: { type: "STRING" },
+                            options: { type: "ARRAY", items: { type: "STRING" } },
+                            answer: { type: "INTEGER" },
+                            explanation: { type: "STRING" }
+                        },
+                        required: ["title", "level", "paragraphs", "question", "options", "answer", "explanation"]
+                    }
+                }
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(payload);
+                const story = JSON.parse(jsonText);
+                if (story && Array.isArray(story.paragraphs)) {
+                    currentStory = story;
+                    renderReadingModule();
+                    showToast("New reading passage loaded!");
+                }
+            } catch (e) {
+                showToast("Could not generate a new story right now.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+
+        // ==================== MODULE 4: AI CONVERSATION TUTOR ====================
+        const scenarioPrompts = {
+            coffee: {
+                starter: "Hi there! Welcome to The Daily Grind Café. What can I get started for you today? ☕",
+                context: "You are a friendly barista at a coffee shop helping an English learner practice ordering food and drinks."
+            },
+            interview: {
+                starter: "Good morning! Thanks for coming in today. To get started, could you tell me a little bit about yourself and your background?",
+                context: "You are a supportive hiring manager conducting a mock job interview to help an English learner practice professional speaking."
+            },
+            travel: {
+                starter: "Good afternoon! Welcome to the Grand Horizon Hotel. Do you have a reservation under your name?",
+                context: "You are a polite hotel receptionist helping an English learner practice travel check-in conversations."
+            },
+            casual: {
+                starter: "Hey! How's your week going so far? Doing anything fun this weekend?",
+                context: "You are a friendly native English speaker having casual small talk with an English learner."
+            }
+        };
+
+        function initChatContext() {
+            const scenario = document.getElementById('chat-scenario').value;
+            chatHistory = [];
+        }
+
+        function resetChatScenario() {
+            const scenario = document.getElementById('chat-scenario').value;
+            const info = scenarioPrompts[scenario];
+            chatHistory = [];
+            const box = document.getElementById('chat-messages');
+            box.innerHTML = `
+                <div class="flex items-start space-x-3 max-w-2xl">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-1">AI</div>
+                    <div class="p-4 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm sm:text-base leading-relaxed">
+                        ${info.starter}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const userText = input.value.trim();
+            if (!userText) return;
+
+            input.value = '';
+            const box = document.getElementById('chat-messages');
+
+            // Append User Message
+            const userDiv = document.createElement('div');
+            userDiv.className = "flex items-start justify-end space-x-3";
+            userDiv.innerHTML = `
+                <div class="p-4 rounded-2xl rounded-tr-none bg-blue-600 text-white text-sm sm:text-base leading-relaxed max-w-xl">
+                    ${escapeHTML(userText)}
+                </div>
+            `;
+            box.appendChild(userDiv);
+            box.scrollTop = box.scrollHeight;
+
+            // Typing indicator
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.id = typingId;
+            typingDiv.className = "flex items-start space-x-3 max-w-2xl";
+            typingDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-1">AI</div>
+                <div class="p-4 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800 text-slate-500 text-sm">
+                    <i class="fa-solid fa-ellipsis fa-fade"></i> Emma is typing...
+                </div>
+            `;
+            box.appendChild(typingDiv);
+            box.scrollTop = box.scrollHeight;
+
+            const scenario = document.getElementById('chat-scenario').value;
+            const systemInstruction = `${scenarioPrompts[scenario].context} Keep the conversation natural, engaging, and concise (2-3 sentences). If the user makes a noticeable grammar or phrasing mistake, add a brief, friendly tip at the end in brackets like [Tip: You can also say "..."].`;
+
+            chatHistory.push({ role: "user", parts: [{ text: userText }] });
+
+            try {
+                const reply = await callGeminiAPI({
+                    contents: chatHistory,
+                    systemInstruction: { parts: [{ text: systemInstruction }] }
+                });
+
+                chatHistory.push({ role: "model", parts: [{ text: reply }] });
+                document.getElementById(typingId)?.remove();
+
+                const aiDiv = document.createElement('div');
+                aiDiv.className = "flex items-start space-x-3 max-w-2xl";
+                aiDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-1">AI</div>
+                    <div class="p-4 rounded-2xl rounded-tl-none bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm sm:text-base leading-relaxed">
+                        ${formatTutorReply(reply)}
+                    </div>
+                `;
+                box.appendChild(aiDiv);
+                box.scrollTop = box.scrollHeight;
+                addXP(10);
+            } catch (err) {
+                document.getElementById(typingId)?.remove();
+                showToast("Connection hiccup. Please send your message again.", true);
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        function formatTutorReply(text) {
+            const safe = escapeHTML(text);
+            return safe.replace(/\[Tip:(.*?)\]/g, '<span class="block mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-xs font-medium text-indigo-600 dark:text-indigo-400"><i class="fa-solid fa-lightbulb mr-1"></i>Tip:$1</span>');
+        }
+
+        // ==================== MODULE 4: QUICK QUIZ ====================
+        function loadQuizQuestion() {
+            const q = quizQuestions[currentQuizIdx];
+            document.getElementById('quiz-progress').textContent = `Question ${currentQuizIdx + 1} / ${quizQuestions.length}`;
+            document.getElementById('quiz-question').textContent = q.q;
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('btn-next-quiz').classList.add('hidden');
+
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt w-full text-left p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 bg-slate-50/50 dark:bg-slate-800/50 transition font-medium text-sm sm:text-base flex items-center justify-between";
+                btn.innerHTML = `<span>${opt}</span>`;
+                btn.onclick = () => selectQuizAnswer(idx, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function selectQuizAnswer(selectedIdx, btnEl) {
+            const q = quizQuestions[currentQuizIdx];
+            const buttons = document.querySelectorAll('.quiz-opt');
+            buttons.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'dark:bg-emerald-950/50', 'dark:text-emerald-200', 'bg-rose-50', 'text-rose-800', 'dark:bg-rose-950/50', 'dark:text-rose-200');
+
+            if (selectedIdx === q.answer) {
+                quizScore++;
+                addXP(25);
+                btnEl.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                btnEl.innerHTML += `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+                feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'dark:bg-emerald-950/50', 'dark:text-emerald-200');
+                feedback.innerHTML = `<strong>Correct! (+25 XP)</strong> ${q.explanation}`;
+            } else {
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
+                btnEl.innerHTML += `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                buttons[q.answer].classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                feedback.classList.add('bg-rose-50', 'text-rose-800', 'dark:bg-rose-950/50', 'dark:text-rose-200');
+                feedback.innerHTML = `<strong>Not quite.</strong> ${q.explanation}`;
+            }
+
+            document.getElementById('btn-next-quiz').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIdx++;
+            if (currentQuizIdx < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('quiz-summary').classList.remove('hidden');
+                document.getElementById('quiz-score-text').textContent = `You scored ${quizScore} out of ${quizQuestions.length}!`;
+            }
+        }
+
+        function restartQuiz() {
+            currentQuizIdx = 0;
+            quizScore = 0;
+            document.getElementById('quiz-summary').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        async function generateAIQuiz() {
+            const btn = document.getElementById('btn-ai-quiz');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generating...`;
+
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: "Create 5 multiple-choice English learning quiz questions testing grammar, prepositions, conditionals, and common idioms at an Intermediate (B1-C1) level. Provide 4 options per question, the 0-based index of the right answer, and a helpful explanation."
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                q: { type: "STRING" },
+                                options: { type: "ARRAY", items: { type: "STRING" } },
+                                answer: { type: "INTEGER" },
+                                explanation: { type: "STRING" }
+                            },
+                            required: ["q", "options", "answer", "explanation"]
+                        }
+                    }
+                }
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(payload);
+                const newQuestions = JSON.parse(jsonText);
+                if (Array.isArray(newQuestions) && newQuestions.length > 0) {
+                    quizQuestions = newQuestions;
+                    restartQuiz();
+                    showToast("Generated 5 fresh quiz questions!");
+                }
+            } catch (e) {
+                showToast("Unable to generate new quiz right now.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+    </script>
+</body>
+</html>
